@@ -1,0 +1,5 @@
+FROM ghcr.io/mook/wsl2-xpra-generic:latest
+
+RUN zypper --non-interactive install xeyes
+USER docker-user:docker-user
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh", "/usr/bin/xeyes" ]
