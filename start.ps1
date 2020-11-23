@@ -15,10 +15,14 @@ function Assert-ExitStatus {
 }
 
 function Get-UnixPath {
-    param (
-        [string]$Path
-    )
+    param ( [string]$Path )
     $Path -replace "\\", "/"
+}
+
+function Get-RandomString {
+    param ([int]$Length = 32)
+    $Range = (48..57) + (97..122)
+    -Join ( 1 .. $Length | ForEach { [char]( Get-Random $Range ) } )
 }
 
 $ErrorActionPreference = "Stop"
@@ -26,32 +30,22 @@ $ScriptPath = Get-UnixPath $PSCommandPath
 
 switch ($Mode) {
     "Start" {
-        docker create --shm-size ( 256 * 1024 * 1024 ) $DockerImage `
-            | Set-Variable -Name ContainerID
+        $ContainerName = Get-RandomString 16
+        $Command = "PowerShell.exe", "-NoLogo", "-NonInteractive", `
+            "-File", "`"$ScriptPath`"", `
+            "-Mode", "SSH", "-DockerImage", "`"$DockerImage`"", `
+            "--%"
+        xpra `
+            --ssh="$($Command -Join " ")" `
+            --clipboard-direction=to-server `
+            --webcam=no `
+            attach "ssh://docker-user@${ContainerName}"
         Assert-ExitStatus
-        $Env:CONTAINER_ID = $ContainerID
-
-        try {
-            docker start $ContainerID
-            Assert-ExitStatus
-            # The full name is too long, induces issues with the notification
-            # icon on Windows ("string too long (83, maximum length 64)")
-            $ShortContainerID = $ContainerID.Substring(0, 16)
-            xpra_cmd `
-                --ssh="powershell.exe -NoLogo -NonInteractive -File ${ScriptPath} -Mode SSH --%" `
-                --clipboard-direction=to-server `
-                --webcam=no `
-                attach "ssh://docker-user@${ShortContainerID}"
-            Assert-ExitStatus
-        } finally {
-            docker rm --force --volumes $ContainerID
-            Assert-ExitStatus
-        }
     }
     "SSH" {
         # Skip all the stuff that XPRA is doing to find itself; we have control
         # of the target file system.
-        docker exec --interactive $Env:CONTAINER_ID /usr/bin/xpra _proxy
+        docker run --rm --shm-size ( 256 * 1024 * 1024 ) --interactive $DockerImage
         Assert-ExitStatus
     }
 }
