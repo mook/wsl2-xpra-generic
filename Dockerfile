@@ -30,9 +30,11 @@ RUN true \
     && tr --delete --complement 0-9a-f < /dev/urandom | head --bytes=32 \
         | tee /var/lib/dbus/machine-id \
         | tee /etc/machine-id \
+    && zypper --non-interactive clean --all \
     && true
 COPY --from=fs-layout /usr/local/bin/entrypoint.sh /usr/local/bin/
 COPY --from=fs-layout /run/user/ /run/user/
 COPY --from=fs-layout /home/docker-user/ /home/docker-user/
+ADD  start.ps1 /
 
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh", "/bin/false" ]
