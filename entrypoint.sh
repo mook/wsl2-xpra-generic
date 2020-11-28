@@ -2,6 +2,13 @@
 
 set -o errexit -o nounset
 
+case "${2:-}" in
+    -start-script|--start-script)
+        sed "s@ghcr.io/mook/wsl2-xpra-generic:latest@${3:-ghcr.io/mook/wsl2-xpra-generic:latest}@" </start.ps1
+        exit 0
+        ;;
+esac
+
 if [ $$ == "1" ]; then
     exec /usr/bin/catatonit -- "$0" "$@"
 fi
