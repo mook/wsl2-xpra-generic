@@ -15,10 +15,13 @@ FROM user-base
 RUN true \
     && zypper --non-interactive install \
         catatonit \
+        fetchmsttfonts \
         file \
+        google-opensans-fonts \
         iproute2 \
         libXt6 \
         noto-sans-fonts \
+        pattern:fonts \
         pulseaudio \
         pulseaudio-module-x11 \
         python3-netifaces \
