@@ -31,5 +31,5 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ steps.version.outputs.version }}
           labels: |
             org.opencontainers.image.url=https://github.com/${{ github.repository }}
-            org.opencontainers.image.source=https://github.com/${{ github.repository }}.git
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
