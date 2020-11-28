@@ -1,4 +1,4 @@
-FROM opensuse/leap:15.2 AS user-base
+FROM registry.opensuse.org/opensuse/leap:15.2 AS user-base
 
 RUN useradd --uid 1000 --create-home --user-group docker-user
 
