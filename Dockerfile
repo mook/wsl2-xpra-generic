@@ -1,4 +1,8 @@
-FROM registry.opensuse.org/opensuse/leap:15.2 AS user-base
+# https://build.opensuse.org metadata
+#!BuildTag: wsl2-xpra-generic
+#!UseOBSRepositories
+
+FROM opensuse/leap:15.2 AS user-base
 
 RUN useradd --uid 1000 --create-home --user-group docker-user
 
@@ -14,14 +18,22 @@ RUN chmod u=rwx,og=rx /home/docker-user/.config /home/docker-user/.config/pulse
 FROM user-base
 RUN true \
     && zypper --non-interactive install \
+        adobe-sourcecodepro-fonts \
+        adobe-sourcesanspro-fonts \
+        adobe-sourceserifpro-fonts \
         catatonit \
-        fetchmsttfonts \
+        dejavu-fonts \
         file \
+        google-caladea-fonts \
+        google-carlito-fonts \
+        google-droid-fonts \
+        google-roboto-fonts \
         google-opensans-fonts \
         iproute2 \
+        khmeros-fonts \
         libXt6 \
         noto-sans-fonts \
-        pattern:fonts \
+        patterns-fonts-fonts \
         pulseaudio \
         pulseaudio-module-x11 \
         python3-netifaces \
