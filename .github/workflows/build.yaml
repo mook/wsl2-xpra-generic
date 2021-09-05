@@ -1,5 +1,9 @@
 name: Build
-on: push
+on:
+  push: {}
+  schedule:
+  - cron: '27 3 8 * *'
+  workflow_dispatch: {}
 jobs:
   build:
     name: Build
