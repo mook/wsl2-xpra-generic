@@ -45,7 +45,7 @@ switch ($Mode) {
     "SSH" {
         # Skip all the stuff that XPRA is doing to find itself; we have control
         # of the target file system.
-        docker run --rm --shm-size ( 256 * 1024 * 1024 ) --interactive $DockerImage
+        docker run --init --rm --shm-size ( 256 * 1024 * 1024 ) --interactive $DockerImage
         Assert-ExitStatus
     }
 }

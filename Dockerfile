@@ -2,7 +2,7 @@
 #!BuildTag: wsl2-xpra-generic
 #!UseOBSRepositories
 
-FROM opensuse/leap:15.2 AS user-base
+FROM opensuse/leap:15.4 AS user-base
 
 RUN useradd --uid 1000 --create-home --user-group docker-user
 
@@ -21,7 +21,6 @@ RUN true \
         adobe-sourcecodepro-fonts \
         adobe-sourcesanspro-fonts \
         adobe-sourceserifpro-fonts \
-        catatonit \
         dejavu-fonts \
         file \
         google-caladea-fonts \
@@ -38,6 +37,8 @@ RUN true \
         pulseaudio-module-x11 \
         python3-netifaces \
         python3-pyinotify \
+        python3-pyaml \
+        python3-pyxdg \
         which \
         xdg-user-dirs \
         xorg-x11-server \

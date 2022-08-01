@@ -9,17 +9,20 @@ case "${2:-}" in
         ;;
 esac
 
-if [ $$ == "1" ]; then
-    exec /usr/bin/catatonit -- "$0" "$@"
-fi
-
 if test "$(id -u)" = 0 ; then
-    printf "%bERROR: Unexpected root privilieges%b\n" "\033[0;1;31m" "\033[0m" >&2
-    exit 1
+    exec /usr/bin/setpriv \
+        --init-groups \
+        --inh-caps=-all \
+        --reuid=docker-user \
+        --regid=docker-user \
+        /usr/bin/env HOME=/home/docker-user \
+        "$0" "$@"
 fi
 
 # Sleep a bit to let things settle down; otherwise things seem to break occasionally.
 sleep 3
+
+export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/1000}"
 
 /usr/bin/xpra start \
     --auth=exec:command=/bin/true \
@@ -30,12 +33,14 @@ sleep 3
     --pulseaudio=yes \
     --webcam=no \
     --start-child="$*" \
-    >/run/user/1000/xpra-stdout.log \
-    2>/run/user/1000/xpra-stderr.log
+    >"${XDG_RUNTIME_DIR}/xpra-stdout.log" \
+    2>"${XDG_RUNTIME_DIR}/xpra-stderr.log"
 
 # Wait for XPRA to be ready; the only signal appears to be a line in the log.
 timeout 30 tail --lines=+0 --follow=name --retry \
-    /run/user/1000/xpra/:0.log \
+    "${XDG_RUNTIME_DIR}/xpra/:0.log" 2>/dev/null \
     | grep --quiet --line-buffered --max-count=1 'xpra is ready'
 
+# Run `xpra initenv` first to silence some warnings
+/usr/bin/xpra initenv
 exec /usr/bin/xpra _proxy
